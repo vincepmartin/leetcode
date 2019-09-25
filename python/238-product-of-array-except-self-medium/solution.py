@@ -1,10 +1,11 @@
+# https://leetcode.com/problems/product-of-array-except-self/
 from typing import List
 
 class Solution:
     def productExceptSelf(self, nums: List[int]) -> List[int]:
         p = [None] * len(nums)
 
-        # Dumb way... O(n^2)
+        # Dumb way... O(n^2) due to calling an O(n) function n times...
         for i in range(0, len(nums)):
             p[i] = self.productExceptN(nums,i)
         return p
