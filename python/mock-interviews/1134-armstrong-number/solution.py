@@ -6,6 +6,8 @@ class Solution:
         
         for n in nList:
             aNum += pow(int(n),lenN) 
+            if aNum > N:
+                break
 
         if aNum != N:
             return False
