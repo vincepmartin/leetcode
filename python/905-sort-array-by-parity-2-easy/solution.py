@@ -1,3 +1,5 @@
+from typing import List
+
 class Solution:
     def sortArrayByParity(self, A: List[int]) -> List[int]:
         evens = []
