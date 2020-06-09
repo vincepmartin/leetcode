@@ -16,41 +16,25 @@ class Solution:
             oldS = s 
             s = A[i] - A[i - 1]
             
-            print(f"Slope is: {s} between {i} and {i - 1}")
 
             # The same.
             if s == 0:
-                print("Slope are the same")
                 return False
 
-            # Increase
-            elif s > 0 and oldS > 0:
-                print("** Slope is increasing!")
-                print("No inflection point")
-
-            # Decrease
-            elif s < 0 and oldS < 0:
-                print("Slope is decreasing!")
-                print("No inflection point")
-                
-            # Inflection point detected 
-            else:
-                print(f"Inflection point found at {i}")
+            # Inflection point detected.
+            if s * oldS <= 0:
                 iCount += 1
 
                 if s > oldS:
                     ips.append(1)
                 
+                elif not ips:
+                    return False
+                
                 else:
-                    if not ips:
-                        return False
-                    else:
-                        ips.pop()
+                    ips.pop()
 
-        print(f"count: {iCount}")
-        
         if iCount == 2 and not ips:
-            print("***** RETURNING TRUE *****")
             return True
 
         else:
