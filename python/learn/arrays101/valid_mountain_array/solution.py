@@ -2,15 +2,15 @@ from typing import List
 
 class Solution:
     def validMountainArray(self, A: List[int]) -> bool:
-        last = A[0]
-        positiveInflectionPoint = None
-        negativeInflectionPoint = None
+        # Sometimes we are given something with only one value. 
+        if not A or len(A) == 1:
+            return False
 
-        ips = {}
-         
+        ips = []
+        iCount = 0
         s = 0 
         oldS = 0 
-       
+            
         for i in range(1, len(A)):
             # Calculate the slope.
             oldS = s 
@@ -19,53 +19,60 @@ class Solution:
             print(f"Slope is: {s} between {i} and {i - 1}")
 
             # The same.
-            if s == oldS:
+            if s == 0:
                 print("Slope are the same")
                 return False
 
             # Increase
-            if s > 0 and oldS > 0:
+            elif s > 0 and oldS > 0:
                 print("** Slope is increasing!")
                 print("No inflection point")
 
             # Decrease
-            if s < 0 and oldS < 0:
+            elif s < 0 and oldS < 0:
                 print("Slope is decreasing!")
                 print("No inflection point")
                 
-            # Same
+            # Inflection point detected 
             else:
                 print(f"Inflection point found at {i}")
-                if s < oldS and positiveInflectionPoint == None:
-                    print("Negative inflection point.")
-                    print("Not a mountain, lacks positive climb.") 
-                    return False
+                iCount += 1
 
-                elif s > oldS:
-                    print("Positive inflection point.")
-                    positiveInflectionPoint = i
+                if s > oldS:
+                    ips.append(1)
+                
+                else:
+                    if not ips:
+                        return False
+                    else:
+                        ips.pop()
 
- 
-                   print("Not a mountain, lacks negative fall.")
-                    return False
+        print(f"count: {iCount}")
+        
+        if iCount == 2 and not ips:
+            print("***** RETURNING TRUE *****")
+            return True
 
-        if negativeInflectionPoint == None or positiveInflectionPoint == None:
+        else:
             return False
 
-        return True
-
 s = Solution()
+'''
 t1 = [2,1]
 t1s = False
 
 t2 = [3,5,5]
 t2s = False
+'''
 
 t3 = [0, 3, 2, 1]
 t3s = True
 
-print(f" {t1} is {s.validMountainArray(t1)}")
-print("*****")
-print(f" {t2} is {s.validMountainArray(t2)}")
-print("*****")
+t4 = [3,7,6,4,3,0,1,0]
+t4s = False
+
+t5 = [0,1,2,4,2,1]
+t5s = True
+
 print(f" {t3} is {s.validMountainArray(t3)}")
+print(f" {t5} is {s.validMountainArray(t5)}")
