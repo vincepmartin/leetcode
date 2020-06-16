@@ -41,22 +41,19 @@ class Solution:
             return False
 
 s = Solution()
-'''
 t1 = [2,1]
 t1s = False
-
 t2 = [3,5,5]
 t2s = False
-'''
-
 t3 = [0, 3, 2, 1]
 t3s = True
-
 t4 = [3,7,6,4,3,0,1,0]
 t4s = False
-
 t5 = [0,1,2,4,2,1]
 t5s = True
 
+print(f" {t1} is {s.validMountainArray(t1)}")
+print(f" {t2} is {s.validMountainArray(t2)}")
 print(f" {t3} is {s.validMountainArray(t3)}")
+print(f" {t4} is {s.validMountainArray(t4)}")
 print(f" {t5} is {s.validMountainArray(t5)}")
