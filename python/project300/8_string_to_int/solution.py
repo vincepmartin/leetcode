@@ -2,6 +2,9 @@ from typing import List
 
 class Solution:
     def myAtoi(self, s: str) -> int:
+        if len(s) == 0:
+            return 0
+
         ans = int(self.grabSignsAndNumbers(s))
         lower = pow(-2, 31)
         upper = pow(2, 31) - 1
@@ -14,8 +17,7 @@ class Solution:
         return ans
 
     def grabSignsAndNumbers(self, s: str) -> str:
-        lookup = {
-            '-': None,
+        lookupNumbers = {
             '0': None,
             '1': None,
             '2': None,
@@ -28,21 +30,39 @@ class Solution:
             '9': None
         }
 
-        signFound = False
+        lookupSigns = {'+': None, '-': None}
 
+        signsFound = 0
         good = []
 
         for i in s:
-            if i in lookup:
-                signFound = True
+            # We have a good value.  Append to our list.
+            if i in lookupNumbers:
                 good.append(i)
-            else:
-                if signFound == False and i != ' ':
-                    return '0'
+
+            # We have a sign, append it if we have only one so far.  
+            elif i in lookupSigns:
+                signsFound += 1
+                if signsFound >= 2:
+                    return 0 
+                good.append(i)
+
+            
+            # A non good character means terminate.
+            elif i not in lookupNumbers and i != ' ':
+                break
+
+        # Sometimes we are empty.  Put a 0.
+        if not good:
+            good.append('0')
 
         return ''.join(good)
 
 s = Solution()
-
-# print(s.myAtoi("4193 with words"))
-print(s.myAtoi('-91283472332'))
+'''
+print(s.myAtoi("4193 with words"))
+print(s.myAtoi('3.14159'))
+print(s.myAtoi('-+12'))
+print(s.myAtoi("+1"))
+'''
+print(s.myAtoi("   -42"))
