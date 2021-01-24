@@ -33,4 +33,4 @@ class Solution:
         else:
             return 0
 s = Solution()
-print(s.reverse(-123))
+print(s.reverse(301))
