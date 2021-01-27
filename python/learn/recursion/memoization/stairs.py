@@ -1,5 +1,5 @@
 class Solution:
-    def climbStairs(self, N: int) -> int:
+    def climbStairs(self, n: int) -> int:
         # A cache to store some of our already calculated fibs.
         cache = {}
 
