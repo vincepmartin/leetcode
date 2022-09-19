@@ -66,8 +66,6 @@ var updateMatrix = function (mat) {
 
 // Store our graph for later computation.
 function Graph(noOfVertices, undirected = true) {
-  // console.log(`Creating a new graph with ${noOfVertices} vertices.`);
-  // TODO: REMOVE ME...this.noOfVertices = noOfVertices;
   this.AdjList = new Map();
   this.undirected = undirected;
   this.vertices = new Array(noOfVertices);
@@ -90,20 +88,27 @@ function Graph(noOfVertices, undirected = true) {
 
   // Returns previous nodes info.
   this.helper = (starting_node) => {
+    console.log('CALLING HELPER at starting node: ', starting_node)
     let visited = new Array(noOfVertices).fill(false);
     let prev = new Array(noOfVertices).fill(null);
     let q = new Queue();
     q.enqueue(starting_node);
+    console.log(`enqueued: ${starting_node}`)
+    console.log(q.getItems())
     visited[starting_node] = true;
     
     while (!q.isEmpty()) {
       let node = q.dequeue();
+      console.log(`while: dequeue: ${node}`)
+      console.log(q.getItems())
       let aList = this.AdjList.get(node);
       // Process our list.
       for (let i = 0; i < aList.length; i++) {
         let nNode = aList[i];
         if (!visited[nNode]) {
           q.enqueue(nNode)
+          console.log(`while: enqueued: ${nNode}`)
+          console.log(q.getItems())
           visited[nNode] = true;
           prev[nNode] = node;  
         }
@@ -130,7 +135,10 @@ function Graph(noOfVertices, undirected = true) {
   }
 
   // bfs from start to end.
-  this.bfs = (start, end) => getPath(this.helper(start), start, end)
+  this.bfs = (start, end) => {
+    console.log(`CALLING HELPER ${start} to ${end}`)
+    return getPath(this.helper(start), start, end)
+  }
 }
 
 // Vertex object.
@@ -171,38 +179,49 @@ function getAdjacentItems(x, y, mat) {
 
   // .map((movement) => ((mat.length * movement.y) + movement.x));  Before adding - 1 to take into account out of bounds.
   const validMovements = movements.filter((movement) => isValidCoords(movement))
-
   const validDestinations = validMovements.map((movement) => ((movement.x + mat[0].length * movement.y)) );
-  // console.log("Have valid movements.");
-  // return validMovements 
 
   return validDestinations;
 }
 
-function Node(val, next) {
+function Node(val = null, next = null) {
   this.val = val;
   this.next = next;  
 }
 
 function Queue() {
-  let items = new Node();
-  let head = items;
+  let head = null;
+  let tail = null;
 
   this.enqueue = (i) => {
-    if (!items.val) {
-      items.val = i
-    } else {
-      items.next = new Node(i)
-      items = items.next;
+    let temp = new Node(i);
+    if (!tail) {
+      head = temp;
+      tail = head;
+      return
     }
+    
+    tail.next = temp;
   };
 
   // OPTIMIZE: What is the run time of items.shift()?
   // Returns Node.val or null if our queue is empty. 
   this.dequeue = () => {
-    let qVal = (head) ? head.val: null;
-    head = (head) ? head.next: null;
-    return qVal;
+    console.log('Dequeue')
+    if (!head) {
+      return 
+    }
+
+    let temp = head;
+    head = head.next;
+    
+    // If our head is null, make the rear null as well.
+    if (!head) {
+      tail = null;
+    }
+  
+    // Return temp value
+    return temp.val;
   };
 
   this.isEmpty = () => {
@@ -221,14 +240,31 @@ function Queue() {
 }
 
 // TESTS FOR QUEUE
-// let q = new Queue;
-// console.log('Queue TEST: add items [0,4]')
-// q.enqueue(0);
-// q.enqueue(1);
-// q.enqueue(2);
-// q.enqueue(3);
-// q.enqueue(4);
-// console.log(q.getItems());
+ let q = new Queue;
+ console.log('Queue TEST: enque 0, dequeue 0, enqueue 1')
+
+ q.enqueue(0);
+console.log('after enque 0: ')
+console.log(q.getItems())
+
+console.log('dequeue hopefully the 0:')
+console.log(q.dequeue());
+console.log(q.getItems())
+
+console.log('enqueue the 1, then 2:')
+q.enqueue(1);
+q.enqueue(2);
+
+console.log(q.getItems())
+console.log('dequeue 2 times')
+q.dequeue();
+q.dequeue();
+console.log('is empty?: ', q.isEmpty())
+
+console.log('dequeue 1 more, should be empty already though.')
+q.dequeue();
+console.log('is empty?: ', q.isEmpty())
+
 // 
 // console.log('DeQueue TEST: remove 1')
 // console.log(q.dequeue())
@@ -270,16 +306,16 @@ function Queue() {
 
 
 // Test with the following...
-let t1 = [
-  [0, 0, 0],
-  [0, 1, 0],
-  [0, 0, 0],
-];
-
-let t2 = [[0],[0],[0],[0],[0]];
-let t3 = [[0], [1]]
-let t4 = [[1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1],[1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1],[1,1,1,1,0,1,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,0,1,0,1,0,1,1,1],[1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,1],[0,1,0,0,1,0,0,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,0,1],[1,0,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,0,1,0,0,1,0],[1,1,0,1,1,0,0,0,1,1,0,0,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1],[1,1,1,0,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,0,1,0,0,1,0,0,1],[0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1],[1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1],[1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,1,0],[1,1,1,1,0,1,0,0,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1],[0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,0,0,0,1],[0,1,1,0,0,0,1,1,0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1],[1,1,1,1,0,0,1,1,1,0,0,1,1,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,1,0,0,0],[1,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,0,1],[1,0,0,0,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,1,0,1,0,0,1,1,1,1,1,0],[1,1,0,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,1,0,1,0,1,1,0],[1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,0,0,1,0,1,1,0,1,1,0,1,0,1],[1,1,1,0,1,1,1,0,0,1,0,0,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,0,0,1,0,0,1,1,0,0,1,1,1,1,0,1,1,0,1,1,1,1,1],[0,0,0,1,1,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0],[1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,0,0,0,0,0,1,1,1],[1,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,0,1,1,0],[1,1,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1],[0,1,1,0,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,0,1,0]]
-
-console.log('Running update matrix: ')
-console.log(updateMatrix(t1));
+// let t1 = [
+//   [0, 0, 0],
+//   [0, 1, 0],
+//   [0, 0, 0],
+// ];
+// 
+// let t2 = [[0],[0],[0],[0],[0]];
+// let t3 = [[0], [1]]
+// let t4 = [[1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1],[1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1],[1,1,1,1,0,1,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,0,1,0,1,0,1,1,1],[1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,1],[0,1,0,0,1,0,0,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,0,1],[1,0,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,0,1,0,0,1,0],[1,1,0,1,1,0,0,0,1,1,0,0,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1],[1,1,1,0,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,0,1,0,0,1,0,0,1],[0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1],[1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1],[1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,1,0],[1,1,1,1,0,1,0,0,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1],[0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,0,0,0,1],[0,1,1,0,0,0,1,1,0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1],[1,1,1,1,0,0,1,1,1,0,0,1,1,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,1,0,0,0],[1,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,0,1],[1,0,0,0,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,1,0,1,0,0,1,1,1,1,1,0],[1,1,0,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,1,0,1,0,1,1,0],[1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,0,0,1,0,1,1,0,1,1,0,1,0,1],[1,1,1,0,1,1,1,0,0,1,0,0,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,0,0,1,0,0,1,1,0,0,1,1,1,1,0,1,1,0,1,1,1,1,1],[0,0,0,1,1,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0],[1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,0,0,0,0,0,1,1,1],[1,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,0,1,1,0],[1,1,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1],[0,1,1,0,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,0,1,0]]
+// 
+// console.log('Running update matrix: ')
+// console.log(updateMatrix(t1));
 // console.log(updateMatrix(t4));
