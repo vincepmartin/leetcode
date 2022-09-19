@@ -99,7 +99,6 @@ function Graph(noOfVertices, undirected = true) {
     while (!q.isEmpty()) {
       let node = q.dequeue();
       let aList = this.AdjList.get(node);
-      console.time('WHILE_DEQUEUE_FOR')
       // Process our list.
       for (let i = 0; i < aList.length; i++) {
         let nNode = aList[i];
@@ -180,32 +179,95 @@ function getAdjacentItems(x, y, mat) {
   return validDestinations;
 }
 
+function Node(val, next) {
+  this.val = val;
+  this.next = next;  
+}
+
 function Queue() {
-  let items = [];
-  let head = 0;
-  let tail = 0;
+  let items = new Node();
+  let head = items;
 
   this.enqueue = (i) => {
-    items[tail] = i;
-    tail += 1;
+    if (!items.val) {
+      items.val = i
+    } else {
+      items.next = new Node(i)
+      items = items.next;
+    }
   };
 
   // OPTIMIZE: What is the run time of items.shift()?
+  // Returns Node.val or null if our queue is empty. 
   this.dequeue = () => {
-    let i = items[head];
-    items.shift();
-    tail = tail - 1 < 0 ? 0 : tail - 1;
-    return i;
+    let qVal = (head) ? head.val: null;
+    head = (head) ? head.next: null;
+    return qVal;
   };
 
   this.isEmpty = () => {
-    return items.length === 0;
+    return (!head);
   };
 
   this.getItems = () => {
-    return items;
+    let p = head;
+    let items = []
+    while (p) {
+      items.push(p.val)
+      p = p.next
+    }
+    return items
   };
 }
+
+// TESTS FOR QUEUE
+// let q = new Queue;
+// console.log('Queue TEST: add items [0,4]')
+// q.enqueue(0);
+// q.enqueue(1);
+// q.enqueue(2);
+// q.enqueue(3);
+// q.enqueue(4);
+// console.log(q.getItems());
+// 
+// console.log('DeQueue TEST: remove 1')
+// console.log(q.dequeue())
+// console.log('Items after dequeue.')
+// console.log(q.getItems());
+// 
+// console.log('Queue TEST: add items [5,8]')
+// q.enqueue(5);
+// q.enqueue(6);
+// q.enqueue(7);
+// q.enqueue(8);
+// console.log('Items after enqueue.')
+// console.log(q.getItems());
+// 
+// 
+// console.log('DeQueue a bunch TEST')
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// console.log(q.dequeue());
+// 
+// console.log('Items after dequeue.')
+// console.log(q.getItems());
+
 
 // Test with the following...
 let t1 = [
@@ -215,10 +277,9 @@ let t1 = [
 ];
 
 let t2 = [[0],[0],[0],[0],[0]];
-
 let t3 = [[0], [1]]
 let t4 = [[1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1],[1,1,1,0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,0,1],[1,1,1,1,0,1,0,0,1,1,0,1,1,0,1,1,1,0,1,0,1,0,0,1,0,1,0,1,1,1],[1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,0,0,1],[0,1,0,0,1,0,0,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,0,1],[1,0,1,1,1,1,0,1,0,1,0,1,1,1,0,1,1,1,1,0,1,1,0,1,0,1,0,0,1,0],[1,1,0,1,1,0,0,0,1,1,0,0,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1],[1,1,1,0,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,0,1,0,0,1,0,0,1],[0,1,1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1],[1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,1,1],[1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,1,1,0],[1,1,1,1,0,1,0,0,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1],[0,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,0,1,0,0,0,1],[0,1,1,0,0,0,1,1,0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,0,0,1,1,1,1],[1,1,1,1,0,0,1,1,1,0,0,1,1,0,1,1,1,0,0,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,1,0,0,0],[1,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,0,1,1,1,0,1,1,0,1,0,1,0,1],[1,0,0,0,1,1,1,0,1,1,1,1,0,0,1,1,1,0,1,1,0,1,0,0,1,1,1,1,1,0],[1,1,0,1,0,1,1,0,0,1,1,0,0,1,0,1,1,1,1,1,1,0,1,0,0,0,0,1,1,1],[1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,1,0,1,0,1,1,0],[1,0,0,1,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1],[0,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,0,0,1,0,1,1,0,1,1,0,1,0,1],[1,1,1,0,1,1,1,0,0,1,0,0,0,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1],[1,1,0,0,1,1,1,1,0,0,1,0,0,1,1,0,0,1,1,1,1,0,1,1,0,1,1,1,1,1],[0,0,0,1,1,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,0,0,0,1,1,0],[1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,1,1,1,1,0,1,0,0,0,0,0,1,1,1],[1,0,1,1,0,1,1,0,1,0,1,1,1,0,1,1,1,1,1,0,1,0,0,1,1,0,0,1,1,0],[1,1,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,1,1],[0,1,1,0,1,1,0,0,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,0,1,0]]
 
 console.log('Running update matrix: ')
-// console.log(updateMatrix(t1));
-console.log(updateMatrix(t4));
+console.log(updateMatrix(t1));
+// console.log(updateMatrix(t4));
