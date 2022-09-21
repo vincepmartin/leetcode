@@ -101,7 +101,7 @@ function Graph(noOfVertices, undirected = true) {
       let aList = this.AdjList.get(node);
       // Process our list.
       for (let i = 0; i < aList.length; i++) {
-        console.log(`i: ${i} aList.length ${aList.length}`)
+        // console.log(`i: ${i} aList.length ${aList.length}`)
         let nNode = aList[i];
         if (!visited[nNode]) {
           q.enqueue(nNode)
@@ -132,8 +132,10 @@ function Graph(noOfVertices, undirected = true) {
 
   // bfs from start to end.
   this.bfs = (start, end) => {
-    console.log(`CALLING HELPER ${start} to ${end}`)
-    const path = getPath(this.helper(start), start, end)
+    // console.log(`CALLING HELPER ${start} to ${end}`)
+    // TODO: Make this more concise again if we fixed our problem.
+    const bfs_return = this.helper(start);
+    const path = getPath(bfs_return, start, end)
     return path;
   }
 }
@@ -187,34 +189,38 @@ function Node(val = null, next = null) {
 }
 
 function Queue() {
-  let head = null;
-  let tail = null;
+  let front = null;
+  let rear = null;
 
   this.enqueue = (i) => {
-    let temp = new Node(i);
-    if (!tail) {
-      head = temp;
-      tail = head;
-      return
-    }
+    const temp = new Node(i);
     
-    tail.next = temp;
+    // Queue is empty, make the front and rear of our line the same spot.
+    if (!rear) {
+      front = rear = temp;
+      return;
+    }
+
+    // Queue is not empty, add another item to the rear.
+    rear.next = temp;
+    rear = temp; // I think I could have also done rear = rear.next.
   };
 
   // OPTIMIZE: What is the run time of items.shift()?
   // Returns Node.val or null if our queue is empty. 
   this.dequeue = () => {
     // console.log('Dequeue')
-    if (!head) {
+    if (!front) {
       return 
     }
 
-    let temp = head;
-    head = head.next;
+    
+    let temp = front;
+    front = front.next;
     
     // If our head is null, make the rear null as well.
-    if (!head) {
-      tail = null;
+    if (!front) {
+      rear = null;
     }
   
     // Return temp value
@@ -222,11 +228,11 @@ function Queue() {
   };
 
   this.isEmpty = () => {
-    return (!head);
+    return (!front);
   };
 
   this.getItems = () => {
-    let p = head;
+    let p = front;
     let items = []
     while (p) {
       items.push(p.val)
@@ -239,68 +245,20 @@ function Queue() {
 // TESTS FOR QUEUE
 //  let q = new Queue;
 //  console.log('Queue TEST: enque 0, dequeue 0, enqueue 1')
-// 
-//  q.enqueue(0);
-// console.log('after enque 0: ')
-// console.log(q.getItems())
-// 
-// console.log('dequeue hopefully the 0:')
-// console.log(q.dequeue());
-// console.log(q.getItems())
-// 
-// console.log('enqueue the 1, then 2:')
-// q.enqueue(1);
-// q.enqueue(2);
-// 
-// console.log(q.getItems())
-// console.log('dequeue 2 times')
-// q.dequeue();
-// q.dequeue();
-// console.log('is empty?: ', q.isEmpty())
-// 
-// console.log('dequeue 1 more, should be empty already though.')
-// q.dequeue();
-// console.log('is empty?: ', q.isEmpty())
 
+// let q = new Queue();
+// q.enqueue('a');
+// q.enqueue('b');
+// console.log(q.getItems())
 // 
-// console.log('DeQueue TEST: remove 1')
-// console.log(q.dequeue())
-// console.log('Items after dequeue.')
-// console.log(q.getItems());
+// q.dequeue();
+// q.dequeue();
+// console.log(q.getItems())
 // 
-// console.log('Queue TEST: add items [5,8]')
-// q.enqueue(5);
-// q.enqueue(6);
-// q.enqueue(7);
-// q.enqueue(8);
-// console.log('Items after enqueue.')
-// console.log(q.getItems());
-// 
-// 
-// console.log('DeQueue a bunch TEST')
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// console.log(q.dequeue());
-// 
-// console.log('Items after dequeue.')
-// console.log(q.getItems());
-
+// q.isEmpty()
+// q.dequeue();
+// q.enqueue('c')
+// console.log(q.getItems())
 
 // Test with the following...
 let t1 = [
@@ -315,4 +273,3 @@ let t4 = [[1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1],[1,1,1,0
 
 console.log('Running update matrix: ')
 console.log(updateMatrix(t1));
-// console.log(updateMatrix(t4));
