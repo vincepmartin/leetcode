@@ -99,7 +99,6 @@ function Graph(noOfVertices, undirected = true) {
     while (!q.isEmpty()) {
       let node = q.dequeue();
       let aList = this.AdjList.get(node);
-      console.time('WHILE_DEQUEUE_FOR')
       // Process our list.
       for (let i = 0; i < aList.length; i++) {
         let nNode = aList[i];
@@ -221,4 +220,4 @@ let t4 = [[1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,0,1,1],[1,1,1,0
 
 console.log('Running update matrix: ')
 // console.log(updateMatrix(t1));
-console.log(updateMatrix(t4));
+console.log(updateMatrix(t1));
